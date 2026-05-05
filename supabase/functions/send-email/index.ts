@@ -2,7 +2,7 @@ import { corsHeaders } from "https://esm.sh/@supabase/supabase-js@2.95.0/cors";
 import { z } from "npm:zod@3.23.8";
 
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/resend";
-const FROM = "McCall Fencing <info@mccallfencing.com>";
+const FROM = "McCall Fencing <noreply@mccallfencing.com>";
 const NOTIFY_TO = "john@mccallfencing.com";
 
 const BodySchema = z.object({
