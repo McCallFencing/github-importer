@@ -296,7 +296,28 @@ export default function FenceEstimator() {
         gateCosts: estimate?.gateCosts,
       };
 
-      
+      // Save lead to database
+      const { error: leadError } = await supabase.from('leads').insert({
+        name: contactData.name,
+        email: contactData.email,
+        phone: contactData.phone,
+        address: contactData.address || null,
+        source: 'calculator',
+        status: 'new',
+        calculator_mode: calculatorMode,
+        fence_type: selectedType,
+        fence_name: selectedFence?.name || null,
+        fence_height: height ? Number(height) : null,
+        linear_feet: linearFeet ? Number(linearFeet) : null,
+        single_gates: singleGates ? Number(singleGates) : 0,
+        double_gates: doubleGates ? Number(doubleGates) : 0,
+        estimate_low: estimate?.mode === "install" ? Math.round(estimate.lowEstimate) : null,
+        estimate_high: estimate?.mode === "install" ? Math.round(estimate.highEstimate) : null,
+        estimate_total: estimate?.mode === "diy" ? Math.round(estimate.total) : null,
+        material_cost: estimate?.materialCost ? Math.round(estimate.materialCost) : null,
+        gate_costs: estimate?.gateCosts ? Math.round(estimate.gateCosts) : null,
+      });
+      if (leadError) console.error('Failed to save lead:', leadError);
 
       const { data, error } = await supabase.functions.invoke('send-estimate-email', {
         body: emailPayload,
