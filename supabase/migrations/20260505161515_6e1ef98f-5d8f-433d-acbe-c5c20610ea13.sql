@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Workers can view invitations" ON public.invitations;
