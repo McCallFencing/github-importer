@@ -1,96 +1,61 @@
+/* Google Fonts are now loaded in index.html for better performance */
+/* Fallback import removed to eliminate render-blocking request */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core brand colors - McCall Fencing - Steel Gray & Gold */
+    --charcoal: 220 15% 18%;
+    --steel: 215 15% 35%;
+    --steel-dark: 220 18% 22%;
+    --navy: 220 35% 22%;
+    --navy-dark: 220 40% 15%;
+    --steel-blue: 215 45% 28%;
+    --steel-blue-dark: 215 50% 20%;
+    --gold: 42 85% 55%;
+    --gold-dark: 38 75% 42%;
+    --wood: 32 45% 55%;
+    --wood-dark: 28 40% 35%;
+    --metal: 215 12% 55%;
+    --metal-light: 215 10% 75%;
+    --cream: 45 20% 96%;
+    --slate-tech: 215 12% 32%;
+    --slate-tech-dark: 215 15% 24%;
 
+    /* Semantic tokens */
+    --background: 45 20% 96%;
+    --foreground: 220 15% 18%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
+    --card-foreground: 220 15% 18%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 220 15% 18%;
+    --primary: 42 85% 55%;
+    --primary-foreground: 220 18% 15%;
+    --secondary: 215 15% 35%;
+    --secondary-foreground: 45 20% 96%;
+    --muted: 215 10% 92%;
+    --muted-foreground: 220 12% 40%;
+    --accent: 38 75% 42%;
+    --accent-foreground: 45 20% 96%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 215 10% 85%;
+    --input: 215 10% 85%;
+    --ring: 42 85% 55%;
+    --radius: 0.75rem;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar tokens */
+    --sidebar-background: 220 15% 18%;
+    --sidebar-foreground: 215 10% 75%;
+    --sidebar-primary: 42 85% 55%;
+    --sidebar-primary-foreground: 220 18% 15%;
+    --sidebar-accent: 215 15% 28%;
+    --sidebar-accent-foreground: 45 20% 96%;
+    --sidebar-border: 215 15% 28%;
+    --sidebar-ring: 42 85% 55%;
   }
 }
 
@@ -100,6 +65,223 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-body antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
+  }
+}
+
+@layer components {
+  /* Fence Post Component */
+  .fence-post {
+    @apply relative bg-gradient-to-b from-wood to-wood-dark rounded-t-sm;
+    box-shadow: 
+      inset 2px 0 4px rgba(255,255,255,0.2),
+      inset -2px 0 4px rgba(0,0,0,0.2),
+      2px 4px 8px rgba(0,0,0,0.15);
+  }
+
+  .fence-post-metal {
+    @apply relative bg-gradient-to-b from-metal-light to-metal rounded-sm;
+    box-shadow: 
+      inset 1px 0 2px rgba(255,255,255,0.4),
+      inset -1px 0 2px rgba(0,0,0,0.2),
+      2px 4px 8px rgba(0,0,0,0.2);
+  }
+
+  /* Fence Rail Component */
+  .fence-rail {
+    @apply h-3 bg-gradient-to-r from-wood-dark via-wood to-wood-dark rounded-sm;
+    box-shadow: 
+      inset 0 2px 4px rgba(255,255,255,0.2),
+      inset 0 -2px 4px rgba(0,0,0,0.2);
+  }
+
+  .fence-rail-metal {
+    @apply h-2 bg-gradient-to-r from-metal via-metal-light to-metal rounded-sm;
+    box-shadow: 
+      inset 0 1px 2px rgba(255,255,255,0.4),
+      inset 0 -1px 2px rgba(0,0,0,0.2);
+  }
+
+  /* Chain Link Pattern */
+  .chain-link-bg {
+    background-image: 
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 8px,
+        hsl(var(--metal) / 0.15) 8px,
+        hsl(var(--metal) / 0.15) 10px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 8px,
+        hsl(var(--metal) / 0.15) 8px,
+        hsl(var(--metal) / 0.15) 10px
+      );
+  }
+
+  /* Wood Slat Pattern */
+  .wood-slat {
+    @apply bg-gradient-to-b from-wood via-wood-dark to-wood;
+    box-shadow: 
+      inset 1px 0 2px rgba(255,255,255,0.15),
+      inset -1px 0 2px rgba(0,0,0,0.2),
+      1px 0 3px rgba(0,0,0,0.1);
+  }
+
+  .wood-slat::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+      repeating-linear-gradient(
+        180deg,
+        transparent 0px,
+        transparent 20px,
+        rgba(0,0,0,0.05) 20px,
+        rgba(0,0,0,0.05) 22px
+      );
+  }
+
+  /* Metal Shimmer */
+  .metal-shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--metal)) 0%,
+      hsl(var(--metal-light)) 25%,
+      hsl(var(--metal)) 50%,
+      hsl(var(--metal-light)) 75%,
+      hsl(var(--metal)) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 3s linear infinite;
+  }
+
+  /* Button Variants */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-8 py-4 bg-primary text-primary-foreground font-semibold rounded-lg transition-all duration-300;
+    @apply hover:scale-105 hover:shadow-lg;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-8 py-4 bg-secondary text-secondary-foreground font-semibold rounded-lg transition-all duration-300;
+    @apply hover:bg-wood-dark hover:text-cream hover:scale-105 hover:shadow-lg;
+    @apply focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center px-8 py-4 border-2 border-charcoal text-charcoal font-semibold rounded-lg transition-all duration-300 bg-transparent;
+    @apply hover:bg-charcoal hover:text-cream hover:scale-105;
+    @apply focus:outline-none focus:ring-2 focus:ring-charcoal focus:ring-offset-2;
+  }
+
+  /* Card Styles */
+  .service-card {
+    @apply relative bg-card rounded-2xl p-8;
+    @apply cursor-default;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+
+  .service-card::before {
+    content: '';
+    @apply absolute top-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-primary rounded-b-full;
+  }
+
+  /* Navigation */
+  .nav-link {
+    @apply relative text-foreground/80 font-medium transition-colors duration-300 hover:text-primary;
+  }
+
+  .nav-link::after {
+    content: '';
+    @apply absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300;
+  }
+
+  .nav-link:hover::after {
+    @apply w-full;
+  }
+
+  .nav-link-active {
+    @apply text-primary;
+  }
+
+  .nav-link-active::after {
+    @apply w-full;
+  }
+
+  /* Section Styles */
+  .section-padding {
+    @apply py-20 lg:py-32;
+  }
+
+  .container-narrow {
+    @apply max-w-5xl mx-auto px-6;
+  }
+
+  .container-wide {
+    @apply max-w-7xl mx-auto px-6;
+  }
+
+  /* Fence Divider */
+  .fence-section-divider {
+    @apply relative w-full h-24 flex items-center justify-center overflow-hidden;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Infinite marquee animation */
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  .animate-marquee {
+    animation: marquee linear infinite;
+  }
+
+  .animate-delay-100 {
+    animation-delay: 100ms;
+  }
+
+  .animate-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animate-delay-300 {
+    animation-delay: 300ms;
+  }
+
+  .animate-delay-400 {
+    animation-delay: 400ms;
+  }
+
+  .animate-delay-500 {
+    animation-delay: 500ms;
+  }
+
+  .animate-delay-600 {
+    animation-delay: 600ms;
+  }
+
+  .animate-delay-700 {
+    animation-delay: 700ms;
+  }
+
+  .animate-delay-800 {
+    animation-delay: 800ms;
   }
 }
