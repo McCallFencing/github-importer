@@ -15,14 +15,14 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false);
   const [forgotMode, setForgotMode] = useState(false);
   const [resetSent, setResetSent] = useState(false);
-  const { signIn, user, isAdmin, loading: authLoading } = useAuth();
+  const { signIn, user, hasAnyRole, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!authLoading && user && isAdmin) {
+    if (!authLoading && user && hasAnyRole) {
       navigate("/admin", { replace: true });
     }
-  }, [user, isAdmin, authLoading, navigate]);
+  }, [user, hasAnyRole, authLoading, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
