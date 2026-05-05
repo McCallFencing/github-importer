@@ -19,13 +19,40 @@ export default function AdminResetPassword() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    let isMounted = true;
+
+    const acceptActiveRecoverySession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!isMounted) return false;
+      if (session?.user) {
+        setIsValidSession(true);
+        setLinkError("");
+        setIsLoading(false);
+        window.history.replaceState(null, "", window.location.pathname);
+        return true;
+      }
+      return false;
+    };
+
+    const markInvalidLink = async () => {
+      const recovered = await acceptActiveRecoverySession();
+      if (recovered || !isMounted) return;
+      setLinkError("This password reset link is invalid or has expired. Please request a new one.");
+      setIsValidSession(false);
+      setIsLoading(false);
+    };
+
     // Listen for PASSWORD_RECOVERY event (works with both PKCE and implicit flows)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "PASSWORD_RECOVERY") {
         setIsValidSession(true);
         setIsLoading(false);
         // Clean URL
         window.history.replaceState(null, "", window.location.pathname);
+      } else if (session?.user && window.location.pathname === "/admin/reset-password") {
+        setIsValidSession(true);
+        setLinkError("");
+        setIsLoading(false);
       }
     });
 
@@ -40,9 +67,7 @@ export default function AdminResetPassword() {
     if (code) {
       supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
         if (error) {
-          setLinkError("This password reset link is invalid or has expired. Please request a new one.");
-          setIsValidSession(false);
-          setIsLoading(false);
+          markInvalidLink();
         } else {
           setIsValidSession(true);
           setIsLoading(false);
@@ -56,23 +81,25 @@ export default function AdminResetPassword() {
       if (refreshToken && type === "recovery") {
         supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken }).then(({ error }) => {
           if (error) {
-            setLinkError("This password reset link is invalid or has expired. Please request a new one.");
-            setIsValidSession(false);
+            markInvalidLink();
           } else {
             setIsValidSession(true);
             window.history.replaceState(null, "", window.location.pathname);
+            setIsLoading(false);
           }
-          setIsLoading(false);
         });
+      } else {
+        markInvalidLink();
       }
     } else {
-      // No code or token present
-      setLinkError("This password reset link is invalid or has expired. Please request a new one.");
-      setIsValidSession(false);
-      setIsLoading(false);
+      // The auth client can consume the URL before this page mounts, so accept the recovered session if present.
+      markInvalidLink();
     }
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
