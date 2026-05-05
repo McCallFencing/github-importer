@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading, hasAnyRole } = useAuth();
+  const { user, loading, hasAnyRole, rolesLoading } = useAuth();
 
   const profileQuery = useQuery({
     queryKey: ["my_profile", user?.id],
@@ -21,7 +21,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
     enabled: !!user && hasAnyRole,
   });
 
-  if (loading || (user && hasAnyRole && profileQuery.isLoading)) {
+  if (loading || (user && rolesLoading) || (user && hasAnyRole && profileQuery.isLoading)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />

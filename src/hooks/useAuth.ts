@@ -7,6 +7,7 @@ export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [roles, setRoles] = useState<string[]>([]);
+  const [rolesLoading, setRolesLoading] = useState(false);
 
   const isAdmin = roles.includes("admin");
   const isWorker = roles.includes("worker");
@@ -16,6 +17,7 @@ export function useAuth() {
     let isMounted = true;
 
     const fetchRoles = async (userId: string) => {
+      if (isMounted) setRolesLoading(true);
       try {
         const { data } = await supabase
           .from("user_roles")
@@ -24,6 +26,8 @@ export function useAuth() {
         if (isMounted) setRoles(data?.map((r) => r.role) ?? []);
       } catch {
         if (isMounted) setRoles([]);
+      } finally {
+        if (isMounted) setRolesLoading(false);
       }
     };
 
@@ -33,9 +37,12 @@ export function useAuth() {
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
-          fetchRoles(session.user.id);
+          setRolesLoading(true);
+          // Defer to avoid deadlocks inside the auth callback
+          setTimeout(() => fetchRoles(session.user.id), 0);
         } else {
           setRoles([]);
+          setRolesLoading(false);
         }
       }
     );
@@ -71,5 +78,5 @@ export function useAuth() {
     await supabase.auth.signOut();
   };
 
-  return { user, session, loading, roles, isAdmin, isWorker, hasAnyRole, signIn, signOut };
+  return { user, session, loading, roles, rolesLoading, isAdmin, isWorker, hasAnyRole, signIn, signOut };
 }
