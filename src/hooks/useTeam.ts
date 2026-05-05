@@ -29,7 +29,7 @@ export function useTeam() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("invitations")
-        .select("*")
+        .select("id, email, role, accepted, accepted_at, expires_at, created_at, invited_by")
         .is("accepted_at", null)
         .order("created_at", { ascending: false });
       if (error) throw error;
