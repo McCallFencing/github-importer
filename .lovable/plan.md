@@ -1,30 +1,38 @@
-## Set up email notifications via Resend
+I checked the code and backend state. The admin destination is `/admin`, so on the published site it should be `https://mccallfencing.com/admin` (or `https://www.mccallfencing.com/admin`, depending which domain you open). `/admin/login` is only the login page.
 
-Resend is now connected to the project (key stored securely — not in code). Now I'll build the two backend functions your frontend already calls.
+What I found:
+- Jake has the `admin` role in the database.
+- John has the `worker` role in the database.
+- The app route is defined as `/admin/*`, protected by `ProtectedRoute`.
+- The login code currently signs in and immediately navigates to `/admin`.
+- `ProtectedRoute` then checks `hasAnyRole`; if roles are not loaded or cannot be read, it redirects back to `/admin/login`.
+- A security migration revoked direct execute permissions on the backend role helper functions (`has_role`, `has_any_role`) from authenticated users. Those functions are used inside the access policies for `profiles`, `leads`, etc. This can break role/profile-dependent queries even when the user is correctly assigned a role.
+- There is also still a frontend race: after sign-in, `AdminLogin` navigates to `/admin` before role loading is definitely finished.
 
-### What gets built
+Plan to fix:
 
-**1. `send-email` edge function** (called by the Contact page)
-- Sends a notification to **info@mccallfencing.com** with: name, email, phone, address, project type, message
-- `Reply-To` set to the customer's email so you can reply directly from your inbox
-- Validates input with Zod (rejects spam/malformed submissions)
+1. Restore safe backend function execution for access policies
+   - Add a migration granting authenticated users permission to execute the role-check helper functions needed by RLS policies:
+     - `public.has_role(uuid, app_role)`
+     - `public.has_any_role(uuid)`
+   - Keep them as `SECURITY DEFINER` functions with a fixed `search_path`, so users can ask “do I have this role?” without being able to edit roles.
+   - Do not expose role storage on profiles or client-side storage.
 
-**2. `send-estimate-email` edge function** (called by the Fence Estimator)
-- Sends **two** emails:
-  - **To you (info@mccallfencing.com)**: full lead + project details + estimate breakdown (material/gate costs)
-  - **To the customer**: a clean copy of their estimate with your contact info
-- `Reply-To` on the customer copy points back to info@mccallfencing.com
+2. Make login wait for role loading before redirecting
+   - Update `src/pages/AdminLogin.tsx` so successful password sign-in does not immediately navigate before `useAuth` has finished loading roles.
+   - The existing effect will redirect only when `user && hasAnyRole` is true.
+   - If sign-in succeeds but the user has no allowed role, show a clear “not authorized” message instead of bouncing silently.
 
-### From address
-Both will send as `McCall Fencing <info@mccallfencing.com>` — make sure `mccallfencing.com` is the verified domain in your Resend account (you mentioned it is).
+3. Harden `useAuth` role state behavior
+   - Ensure `rolesLoading` stays true while roles are being fetched after sign-in.
+   - Ensure stale roles are cleared when the auth user changes, so one user’s prior role state can’t leak into another session.
+   - Logically separate “signed in” from “authorized for CRM”.
 
-### Security
-- Resend key lives in Lovable's secret store, accessed only server-side via the connector gateway
-- Inputs validated server-side with Zod
-- CORS headers handled correctly so the browser can call them
+4. Keep `/admin` as the canonical CRM destination
+   - No separate hidden page is expected.
+   - The admin CRM page is `/admin`; the login page is `/admin/login`; reset and invite routes are separate public admin utility routes.
 
-### What I won't change
-- No frontend changes — your Contact form and Estimator already invoke these two functions; they just need to exist.
-- No database changes — leads are still saved as today.
-
-Approve and I'll create both functions and deploy them.
+5. Validate after implementation
+   - Re-check database permissions for the role helper functions.
+   - Confirm Jake and John still have their roles.
+   - Verify the route logic no longer sends an authorized user back to login due to role-loading timing.
