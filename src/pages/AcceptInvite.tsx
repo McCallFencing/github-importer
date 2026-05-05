@@ -76,7 +76,7 @@ export default function AcceptInvite() {
 
       if (signInErr) throw signInErr;
 
-      navigate("/admin/profile", { replace: true });
+      navigate("/admin", { replace: true });
     } catch (err: any) {
       setError(err.message || "Something went wrong. Please try again.");
     } finally {
