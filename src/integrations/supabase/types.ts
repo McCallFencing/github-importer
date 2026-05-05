@@ -14,16 +14,369 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      follow_up_reminders: {
+        Row: {
+          assigned_to: string
+          created_at: string
+          created_by: string
+          id: string
+          lead_id: string
+          message: string | null
+          reminder_date: string
+          sent: boolean
+        }
+        Insert: {
+          assigned_to: string
+          created_at?: string
+          created_by: string
+          id?: string
+          lead_id: string
+          message?: string | null
+          reminder_date: string
+          sent?: boolean
+        }
+        Update: {
+          assigned_to?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          lead_id?: string
+          message?: string | null
+          reminder_date?: string
+          sent?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "follow_up_reminders_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "follow_up_reminders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "follow_up_reminders_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invitations: {
+        Row: {
+          accepted: boolean
+          accepted_at: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string
+          role: string
+          token: string
+          used_at: string | null
+        }
+        Insert: {
+          accepted?: boolean
+          accepted_at?: string | null
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          invited_by: string
+          role?: string
+          token?: string
+          used_at?: string | null
+        }
+        Update: {
+          accepted?: boolean
+          accepted_at?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string
+          role?: string
+          token?: string
+          used_at?: string | null
+        }
+        Relationships: []
+      }
+      lead_activity_log: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          lead_id: string
+          new_value: string | null
+          old_value: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          lead_id: string
+          new_value?: string | null
+          old_value?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          lead_id?: string
+          new_value?: string | null
+          old_value?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_activity_log_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_assignments: {
+        Row: {
+          assigned_at: string
+          assigned_by: string
+          assigned_to: string
+          id: string
+          lead_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by: string
+          assigned_to: string
+          id?: string
+          lead_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string
+          assigned_to?: string
+          id?: string
+          lead_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_assignments_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_assignments_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_notes: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          lead_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          lead_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          lead_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_notes_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_notes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads: {
+        Row: {
+          address: string | null
+          calculator_mode: string | null
+          created_at: string
+          double_gates: number | null
+          email: string
+          estimate_high: number | null
+          estimate_low: number | null
+          estimate_total: number | null
+          fence_height: number | null
+          fence_name: string | null
+          fence_type: string | null
+          gate_costs: number | null
+          id: string
+          linear_feet: number | null
+          material_cost: number | null
+          message: string | null
+          name: string
+          notes: string | null
+          phone: string
+          project_type: string | null
+          single_gates: number | null
+          source: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          calculator_mode?: string | null
+          created_at?: string
+          double_gates?: number | null
+          email: string
+          estimate_high?: number | null
+          estimate_low?: number | null
+          estimate_total?: number | null
+          fence_height?: number | null
+          fence_name?: string | null
+          fence_type?: string | null
+          gate_costs?: number | null
+          id?: string
+          linear_feet?: number | null
+          material_cost?: number | null
+          message?: string | null
+          name: string
+          notes?: string | null
+          phone: string
+          project_type?: string | null
+          single_gates?: number | null
+          source: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          calculator_mode?: string | null
+          created_at?: string
+          double_gates?: number | null
+          email?: string
+          estimate_high?: number | null
+          estimate_low?: number | null
+          estimate_total?: number | null
+          fence_height?: number | null
+          fence_name?: string | null
+          fence_type?: string | null
+          gate_costs?: number | null
+          id?: string
+          linear_feet?: number | null
+          material_cost?: number | null
+          message?: string | null
+          name?: string
+          notes?: string | null
+          phone?: string
+          project_type?: string | null
+          single_gates?: number | null
+          source?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_any_role: { Args: { _user_id: string }; Returns: boolean }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "worker" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +503,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "worker", "user"],
+    },
   },
 } as const
