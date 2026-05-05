@@ -296,7 +296,7 @@ export default function FenceEstimator() {
         gateCosts: estimate?.gateCosts,
       };
 
-      console.log('Sending estimate email:', emailPayload);
+      
 
       const { data, error } = await supabase.functions.invoke('send-estimate-email', {
         body: emailPayload,
@@ -310,7 +310,7 @@ export default function FenceEstimator() {
           variant: "destructive",
         });
       } else {
-        console.log('Estimate email sent successfully:', data);
+        
         toast({
           title: "Estimate sent!",
           description: "Check your email for a copy of your estimate.",
