@@ -3,7 +3,7 @@ import { z } from "npm:zod@3.23.8";
 
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/resend";
 const FROM = "McCall Fencing <info@mccallfencing.com>";
-const NOTIFY_TO = "info@mccallfencing.com";
+const NOTIFY_TO = "john@mccallfencing.com";
 
 const BodySchema = z.object({
   name: z.string().trim().min(1).max(200),
