@@ -97,13 +97,28 @@ export default function ContactPage() {
     }
 
     try {
+      const projectTypeLabel = projectTypes.find(pt => pt.value === formData.projectType)?.label || formData.projectType;
+
+      // Save lead to database
+      const { error: leadError } = await supabase.from('leads').insert({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        address: formData.address || null,
+        project_type: projectTypeLabel || null,
+        message: formData.message || null,
+        source: 'contact_form',
+        status: 'new',
+      });
+      if (leadError) console.error('Failed to save lead:', leadError);
+
       const { data, error } = await supabase.functions.invoke('send-email', {
         body: {
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
           address: formData.address,
-          projectType: projectTypes.find(pt => pt.value === formData.projectType)?.label || formData.projectType,
+          projectType: projectTypeLabel,
           message: formData.message,
         },
       });
