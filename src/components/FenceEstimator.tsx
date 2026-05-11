@@ -833,12 +833,11 @@ export default function FenceEstimator() {
                         <MapPin size={16} className="text-primary" />
                         Install Location Address *
                       </Label>
-                      <Input
+                      <AddressAutocomplete
                         id="address"
-                        type="text"
                         placeholder="123 Main St, Johnson City, TN 37601"
                         value={contactData.address}
-                        onChange={(e) => handleContactChange('address', e.target.value)}
+                        onChange={(val) => handleContactChange('address', val)}
                         className={contactErrors.address ? "border-destructive" : ""}
                       />
                       {contactErrors.address && (
