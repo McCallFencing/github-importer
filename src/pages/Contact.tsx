@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
 import { useContactInfo } from "@/hooks/useContactInfo";
 import { supabase } from "@/integrations/supabase/client";
+import { AddressAutocomplete } from "@/components/AddressAutocomplete";
 const contactSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
   email: z.string().trim().email("Please enter a valid email").max(255, "Email must be less than 255 characters"),
