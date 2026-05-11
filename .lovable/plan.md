@@ -1,21 +1,13 @@
-## Goal
+## Root cause
 
-Add the uploaded person's face onto the hot air balloon in the hero background image (`src/assets/hero-fence.jpg`) so it's faintly visible — present but not obvious at a glance.
+The fence estimator submits leads with `source: 'calculator'`, but the `leads` table has a CHECK constraint that only allows `'contact_form'` or `'estimate_calculator'`. Every estimator submission is rejected by the database, but the error is only `console.error`'d — the email still goes out, so it looks like everything worked.
 
-## Steps
+That's why Resend shows the emails but `/admin` is empty for any estimator-sourced lead (the 11 existing leads are all `contact_form`, none from the past 6 days).
 
-1. **Convert the upload** — Copy `user-uploads://1000001872.heic` to `/tmp/`, convert HEIC → PNG using ImageMagick (via `nix run nixpkgs#imagemagick`), then crop to the face.
+## Fix
 
-2. **Composite onto the balloon** — Use the Lovable AI Gateway image-edit endpoint (`google/gemini-3-pro-image-preview` for higher quality) with both images:
-   - Source: current `src/assets/hero-fence.jpg`
-   - Reference: cropped face PNG
-   - Prompt: "Subtly blend the person's face into the striped fabric of the hot air balloon. The face should follow the curvature of the balloon, appear as a faint ghosted/printed pattern at low opacity (~20-25%), tinted to match the warm red/orange/yellow stripes. Hard to see at first glance but definitely there on close inspection. Keep all other elements of the image (fence, racetrack, sky, sunset, cars) completely unchanged."
+1. In `src/components/FenceEstimator.tsx` (line 305), change `source: 'calculator'` to `source: 'estimate_calculator'` so the insert satisfies the check constraint.
 
-3. **QA** — View the resulting image. Verify the face is subtly visible on the balloon and the rest of the scene is untouched. If too obvious or too invisible, re-run with adjusted opacity guidance. Iterate up to 2-3 times.
+2. Improve error surfacing so this can't happen silently again: if `leadError` is set in either `FenceEstimator.tsx` or `Contact.tsx`, show a toast (or at least include the error in the existing failure path) instead of only `console.error`.
 
-4. **Replace the asset** — Save the final result to `src/assets/hero-fence.jpg` (overwriting). The Home page already imports it, so no code changes needed.
-
-## Notes
-
-- Keeping the same filename + path means cache-busting happens automatically via Vite's hash on rebuild.
-- If Gemini struggles to keep other parts of the image identical, fallback: do a manual PIL composite — warp the face onto the balloon's elliptical region with low alpha and a multiply/overlay blend mode tinted to balloon colors.
+That's the entire change — no schema migration, no RLS changes needed. Existing leads stay as-is, and new estimator submissions will start showing up on `/admin` immediately.

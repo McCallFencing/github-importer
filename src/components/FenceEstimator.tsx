@@ -302,7 +302,7 @@ export default function FenceEstimator() {
         email: contactData.email,
         phone: contactData.phone,
         address: contactData.address || null,
-        source: 'calculator',
+        source: 'estimate_calculator',
         status: 'new',
         calculator_mode: calculatorMode,
         fence_type: selectedType,
@@ -317,7 +317,14 @@ export default function FenceEstimator() {
         material_cost: estimate?.materialCost ? Math.round(estimate.materialCost) : null,
         gate_costs: estimate?.gateCosts ? Math.round(estimate.gateCosts) : null,
       });
-      if (leadError) console.error('Failed to save lead:', leadError);
+      if (leadError) {
+        console.error('Failed to save lead:', leadError);
+        toast({
+          title: "Couldn't save your request",
+          description: "Your estimate was generated but we couldn't save it on our end. Please call (423) 477-4882 so we don't miss you.",
+          variant: "destructive",
+        });
+      }
 
       const { data, error } = await supabase.functions.invoke('send-estimate-email', {
         body: emailPayload,
