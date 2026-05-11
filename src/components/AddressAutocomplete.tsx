@@ -41,7 +41,7 @@ export function AddressAutocomplete({
       return;
     }
     if (debounceRef.current) window.clearTimeout(debounceRef.current);
-    if (!value || value.trim().length < 3) {
+    if (!value || value.trim().length < 4) {
       setSuggestions([]);
       setOpen(false);
       return;
@@ -52,17 +52,29 @@ export function AddressAutocomplete({
         const ctrl = new AbortController();
         abortRef.current = ctrl;
         setLoading(true);
-        const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(
-          value
-        )}&limit=5&lang=en&osm_tag=place&osm_tag=highway&osm_tag=building`;
-        // Use a simpler query without restrictive osm_tags for better address coverage
-        const simpleUrl = `https://photon.komoot.io/api/?q=${encodeURIComponent(
-          value
-        )}&limit=5&lang=en`;
-        const res = await fetch(simpleUrl, { signal: ctrl.signal });
+
+        // Use US Census Geocoder — free, no key, excellent US street address coverage.
+        const censusUrl =
+          `https://geocoding.geo.census.gov/geocoder/locations/onelineaddress` +
+          `?address=${encodeURIComponent(value)}` +
+          `&benchmark=Public_AR_Current&format=json`;
+
+        const res = await fetch(censusUrl, { signal: ctrl.signal });
         const data = await res.json();
-        const results: Suggestion[] = (data.features || [])
-          .map((f: any) => {
+        const matches: any[] = data?.result?.addressMatches || [];
+        const results: Suggestion[] = matches
+          .slice(0, 5)
+          .map((m) => ({ label: m.matchedAddress as string }))
+          .filter((s) => s.label && s.label.length > 0);
+
+        // Fallback to Photon if Census returns nothing (e.g. brand-new construction)
+        if (results.length === 0) {
+          const photonUrl = `https://photon.komoot.io/api/?q=${encodeURIComponent(
+            value
+          )}&limit=5&lang=en`;
+          const pRes = await fetch(photonUrl, { signal: ctrl.signal });
+          const pData = await pRes.json();
+          (pData.features || []).forEach((f: any) => {
             const p = f.properties || {};
             const parts = [
               [p.housenumber, p.street].filter(Boolean).join(" ") || p.name,
@@ -70,9 +82,11 @@ export function AddressAutocomplete({
               p.state,
               p.postcode,
             ].filter(Boolean);
-            return { label: parts.join(", ") };
-          })
-          .filter((s: Suggestion) => s.label && s.label.length > 0);
+            const label = parts.join(", ");
+            if (label) results.push({ label });
+          });
+        }
+
         setSuggestions(results);
         setOpen(results.length > 0);
         setHighlight(-1);
@@ -84,7 +98,7 @@ export function AddressAutocomplete({
       } finally {
         setLoading(false);
       }
-    }, 250);
+    }, 350);
     return () => {
       if (debounceRef.current) window.clearTimeout(debounceRef.current);
     };
