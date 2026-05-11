@@ -381,14 +381,12 @@ export default function ContactPage() {
                       Project Address *
                       <span className="block text-xs text-muted-foreground font-normal mt-0.5">Required for accurate site assessment and quote</span>
                     </label>
-                    <input
-                      type="text"
+                    <AddressAutocomplete
                       id="address"
-                      name="address"
                       value={formData.address}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-3 rounded-lg border ${errors.address ? 'border-destructive' : 'border-border'} bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary`}
+                      onChange={(val) => setFormData((prev) => ({ ...prev, address: val }))}
                       placeholder="123 Main St, City, TN"
+                      className={`w-full px-4 py-3 rounded-lg border ${errors.address ? 'border-destructive' : 'border-border'} bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary`}
                     />
                     {errors.address && <p className="text-destructive text-sm mt-1">{errors.address}</p>}
                   </div>
