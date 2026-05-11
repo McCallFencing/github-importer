@@ -110,7 +110,14 @@ export default function ContactPage() {
         source: 'contact_form',
         status: 'new',
       });
-      if (leadError) console.error('Failed to save lead:', leadError);
+      if (leadError) {
+        console.error('Failed to save lead:', leadError);
+        toast({
+          title: "Couldn't save your message",
+          description: "We couldn't record your request. Please call (423) 477-4882 so we don't miss you.",
+          variant: "destructive",
+        });
+      }
 
       const { data, error } = await supabase.functions.invoke('send-email', {
         body: {
