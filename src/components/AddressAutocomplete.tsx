@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Loader2, MapPin } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AddressAutocompleteProps {
   id?: string;
@@ -53,39 +54,13 @@ export function AddressAutocomplete({
         abortRef.current = ctrl;
         setLoading(true);
 
-        // Use US Census Geocoder — free, no key, excellent US street address coverage.
-        const censusUrl =
-          `https://geocoding.geo.census.gov/geocoder/locations/onelineaddress` +
-          `?address=${encodeURIComponent(value)}` +
-          `&benchmark=Public_AR_Current&format=json`;
+        const { data, error } = await supabase.functions.invoke("address-autocomplete", {
+          body: { query: value },
+        });
+        if (ctrl.signal.aborted) return;
+        if (error) throw error;
 
-        const res = await fetch(censusUrl, { signal: ctrl.signal });
-        const data = await res.json();
-        const matches: any[] = data?.result?.addressMatches || [];
-        const results: Suggestion[] = matches
-          .slice(0, 5)
-          .map((m) => ({ label: m.matchedAddress as string }))
-          .filter((s) => s.label && s.label.length > 0);
-
-        // Fallback to Photon if Census returns nothing (e.g. brand-new construction)
-        if (results.length === 0) {
-          const photonUrl = `https://photon.komoot.io/api/?q=${encodeURIComponent(
-            value
-          )}&limit=5&lang=en`;
-          const pRes = await fetch(photonUrl, { signal: ctrl.signal });
-          const pData = await pRes.json();
-          (pData.features || []).forEach((f: any) => {
-            const p = f.properties || {};
-            const parts = [
-              [p.housenumber, p.street].filter(Boolean).join(" ") || p.name,
-              p.city || p.town || p.village,
-              p.state,
-              p.postcode,
-            ].filter(Boolean);
-            const label = parts.join(", ");
-            if (label) results.push({ label });
-          });
-        }
+        const results: Suggestion[] = Array.isArray(data?.suggestions) ? data.suggestions : [];
 
         setSuggestions(results);
         setOpen(results.length > 0);
