@@ -10,6 +10,7 @@ import { z } from "zod";
 import { useContactInfo } from "@/hooks/useContactInfo";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { AddressAutocomplete } from "@/components/AddressAutocomplete";
 
 type FenceType = "galvanized-chainlink" | "black-chainlink" | "privacy-pine" | "privacy-cedar" | "picket-pine" | "aluminum-ornamental" | "pvc-privacy";
 type CalculatorMode = "install" | "diy";
@@ -833,12 +834,11 @@ export default function FenceEstimator() {
                         <MapPin size={16} className="text-primary" />
                         Install Location Address *
                       </Label>
-                      <Input
+                      <AddressAutocomplete
                         id="address"
-                        type="text"
                         placeholder="123 Main St, Johnson City, TN 37601"
                         value={contactData.address}
-                        onChange={(e) => handleContactChange('address', e.target.value)}
+                        onChange={(val) => handleContactChange('address', val)}
                         className={contactErrors.address ? "border-destructive" : ""}
                       />
                       {contactErrors.address && (
