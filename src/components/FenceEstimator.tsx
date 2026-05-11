@@ -10,6 +10,7 @@ import { z } from "zod";
 import { useContactInfo } from "@/hooks/useContactInfo";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { AddressAutocomplete } from "@/components/AddressAutocomplete";
 
 type FenceType = "galvanized-chainlink" | "black-chainlink" | "privacy-pine" | "privacy-cedar" | "picket-pine" | "aluminum-ornamental" | "pvc-privacy";
 type CalculatorMode = "install" | "diy";
