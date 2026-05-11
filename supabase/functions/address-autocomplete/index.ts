@@ -44,14 +44,18 @@ Deno.serve(async (req) => {
     }
 
     if (suggestions.length === 0) {
-      const photonUrl = `https://photon.komoot.io/api/?q=${encodeURIComponent(address)}&limit=5&lang=en`;
+      const photonUrl =
+        `https://photon.komoot.io/api/?q=${encodeURIComponent(address)}` +
+        `&limit=10&lang=en&lat=39.8283&lon=-98.5795&zoom=5`;
       const photonRes = await fetch(photonUrl);
       if (photonRes.ok) {
         const data = await photonRes.json();
-        (data?.features || []).forEach((feature: any) => {
-          const label = photonLabel(feature);
-          if (label) suggestions.push({ label });
-        });
+        (data?.features || [])
+          .filter((f: any) => f?.properties?.countrycode === "US")
+          .forEach((feature: any) => {
+            const label = photonLabel(feature);
+            if (label) suggestions.push({ label });
+          });
       }
     }
 
